@@ -13,6 +13,7 @@ const cors = require('cors');
 const bcrypt=require('bcryptjs');
 const cookieParse= require('cookie-parser');
 
+
 //I love to use 404 since I love gfl
 
 
@@ -73,6 +74,7 @@ const userAdd= new mongoose.Schema({
 
 const userName = mongoose.model("userName", userAdd);
 
+app.use('/', express.static(path.join(__dirname,'public')))
 
 app.post("/sendMessage",body('message').isLength({min: 3, max:50}).escape(),async (request, response) => {
     try {
@@ -104,8 +106,7 @@ app.post("/signUpNow", body('use').isLength({min: 3, max:20}).escape() && body('
             return response.send(err);
           }
           request.session.user = {
-            name: request.body.use,
-  
+            name: request.body.use
         }
           response.redirect("/")
         })
@@ -147,21 +148,25 @@ app.get('/api', (req, res)=>{
   }
 })
 
-userMes.watch().on('change', 
-  app.use((req,res)=>{
-    res.redirect('/')
-  }))
 app.get('/serveMe', (req,res)=>{
   userMes.find({}).then((data)=>{
     res.send(data)
   }).catch((error)=>{console.log(error)})
 })
 
+userMes.watch().on('change', (stream)=>{
+  app.use((req,res)=>{
+    if(req.session.user && stream){
+      res.redirect('/')
+    }else{
+      res.sendStatus(404)
+    }
+  })})
+
 
  
   
 // ..
-app.use('/', express.static(path.join(__dirname,'public')))
 
 http.listen(PORT, () => console.log(`server running at http://localhost:${PORT}/`));
 
