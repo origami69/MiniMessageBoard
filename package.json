@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "dashboard",
+  "description": "help",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -10,10 +10,11 @@
     "example",
     "heroku"
   ],
-  "author": "origami",
+  "author": "origami69",
   "license": "ISC",
   "dependencies": {
     "async": "^3.2.4",
+    "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "connect-mongo": "^4.6.0",
     "cookie-parser": "^1.4.6",
@@ -23,7 +24,7 @@
     "express-validator": "^6.14.2",
     "helmet": "^5.1.1",
     "mongodb": "^4.8.1",
-    "mongoose": "^6.5.0"
+    "mongoose": "^6.5.1"
   },
   "engines": {
     "node": "16.13.2",
