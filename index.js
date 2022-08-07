@@ -12,7 +12,8 @@ const PORT = process.env.PORT || 3000;
 const cors = require('cors');
 const bcrypt=require('bcryptjs');
 const cookieParse= require('cookie-parser');
-
+const { Server } = require("socket.io");
+const io = new Server(http);
 
 //I love to use 404 since I love gfl
 
@@ -76,6 +77,16 @@ const userName = mongoose.model("userName", userAdd);
 
 app.use('/', express.static(path.join(__dirname,'public')))
 
+
+io.on('connection', (socket) => {
+  socket.on('disconnect', () => {
+    return
+  });
+  userMes.watch().on('change', async (stream)=>{
+        socket.emit('message', await stream.fullDocument)
+    })
+})
+
 app.post("/sendMessage",body('message').isLength({min: 3, max:50}).escape(),async (request, response) => {
     try {
     const data= request.session.user.name
@@ -90,6 +101,7 @@ app.post("/sendMessage",body('message').isLength({min: 3, max:50}).escape(),asyn
       response.status(500).send(error);
     }
 });
+
 
 app.post("/signUpNow", body('use').isLength({min: 3, max:20}).escape() && body('pass').isLength({ min: 7, max:20 }).matches('[0-9]').matches('[A-Z]').matches('[a-z]').trim().escape(), async (request,response)=>{
   try{
@@ -154,14 +166,7 @@ app.get('/serveMe', (req,res)=>{
   }).catch((error)=>{console.log(error)})
 })
 
-userMes.watch().on('change', (stream)=>{
-  app.use((req,res)=>{
-    if(req.session.user && stream){
-      res.redirect('/')
-    }else{
-      res.sendStatus(404)
-    }
-  })})
+
 
 
  
